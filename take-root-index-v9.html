@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d1b19" />
+  <title>Take Root | Creative Prompt Generator</title>
+  <style>
+    :root {
+      --bg: #e9e1d2;
+      --paper: #f7f0e3;
+      --ink: #2a211a;
+      --muted: #746b5d;
+      --line: #b7a78f;
+      --accent: #3f5a3c;
+      --accent-soft: #d9e1d2;
+      --bark: #5b4635;
+      --moss: #6c7d59;
+      --sage: #9aa488;
+      --shadow: 0 18px 50px rgba(52, 39, 28, 0.14);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(238, 230, 215, 0.78), rgba(233, 225, 210, 0.82)),
+        repeating-linear-gradient(
+          0deg,
+          rgba(91, 70, 53, 0.08) 0px,
+          rgba(91, 70, 53, 0.08) 1px,
+          transparent 1px,
+          transparent 48px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(91, 70, 53, 0.065) 0px,
+          rgba(91, 70, 53, 0.065) 1px,
+          transparent 1px,
+          transparent 92px
+        ),
+        linear-gradient(
+          90deg,
+          transparent 0 46px,
+          rgba(63, 90, 60, 0.035) 46px 47px,
+          transparent 47px 92px
+        ),
+        radial-gradient(circle at 15% 20%, rgba(91, 70, 53, 0.045) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 65%, rgba(63, 90, 60, 0.035) 0 2px, transparent 3px),
+        linear-gradient(180deg, #eee6d7 0%, var(--bg) 100%);
+      background-size:
+        auto,
+        100% 48px,
+        92px 96px,
+        92px 96px,
+        140px 120px,
+        180px 160px,
+        auto;
+      background-position:
+        0 0,
+        0 0,
+        0 0,
+        0 48px,
+        0 0,
+        18px 24px,
+        0 0;
+      background-attachment: fixed;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--bark);
+    }
+
+    .brand-copy p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.86rem;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ghost-button,
+    .secondary-button,
+    .primary-button,
+    .category-button {
+      border: 1.5px solid var(--bark);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+    }
+
+    .ghost-button:hover,
+    .secondary-button:hover,
+    .category-button:hover {
+      transform: translateY(-1px);
+      background: #fffdf8;
+    }
+
+    .primary-button {
+      background: var(--bark);
+      color: var(--paper);
+      font-weight: 700;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .intro {
+      border-bottom: 1.5px solid var(--bark);
+      padding: 10px 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .intro p {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(1rem, 2.1vw, 1.28rem);
+      line-height: 1.38;
+    }
+
+    .controls {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .control-label {
+      display: block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .category-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .category-button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .prompt-card {
+      position: relative;
+      min-height: 360px;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 6vw, 50px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .prompt-card::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(91, 70, 53, 0.20);
+      border-radius: calc(var(--radius) - 7px);
+      pointer-events: none;
+    }
+
+    .prompt-meta,
+    .prompt-body,
+    .prompt-actions {
+      position: relative;
+      z-index: 1;
+    }
+
+    .prompt-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 34px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 800;
+    }
+
+    .category-tag {
+      color: var(--accent);
+    }
+
+    .prompt-number {
+      color: var(--muted);
+    }
+
+    .prompt-text {
+      margin: 0;
+      font-size: clamp(1.55rem, 5vw, 3.1rem);
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      max-width: 820px;
+    }
+
+    .extras {
+      display: grid;
+      gap: 12px;
+      margin-top: 28px;
+      max-width: 760px;
+    }
+
+    .extra {
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      line-height: 1.45;
+      font-size: 1rem;
+    }
+
+    .extra strong {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+    }
+
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 38px;
+    }
+
+    .status {
+      min-height: 22px;
+      margin: 12px 4px 0;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.84rem;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(20, 18, 17, 0.6);
+      padding: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(760px, 100%);
+      max-height: 85vh;
+      overflow: auto;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 12px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.45rem;
+    }
+
+    .favorites-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .favorite-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .favorite-item p {
+      margin: 0 0 10px;
+      line-height: 1.4;
+    }
+
+    .favorite-item small {
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .favorite-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tiny-button {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: transparent;
+      padding: 7px 10px;
+      color: var(--ink);
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 22px 4px;
+      font-style: italic;
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        padding-top: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand-copy p {
+        display: none;
+      }
+
+      .ghost-button .desktop-text {
+        display: none;
+      }
+
+      .prompt-card {
+        min-height: 430px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-copy">
+          <h1>Take Root</h1>
+          <p>Creative prompts from The Black Root Press.</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="ghost-button" id="favoritesButton" aria-label="Open saved prompts">
+          ♡ <span class="desktop-text">Saved</span> <span id="favoriteCount">0</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>
+        Sometimes we all get stuck. Pick a form, or don't, then generate a starting point,
+        add a constraint, make it stranger, and see what takes root. Made by The Black Root Press
+        for writers, artists, and anyone who needs somewhere to begin.
+      </p>
+    </section>
+
+    <section class="controls" aria-label="Prompt controls">
+      <div>
+        <span class="control-label">What do you want to make?</span>
+        <div class="category-row" id="categoryRow"></div>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="constraintToggle" checked />
+          Add an optional constraint
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" id="twistToggle" />
+          Add a strange turn
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" id="holidayToggle" />
+          Add a holiday
+        </label>
+      </div>
+    </section>
+
+    <section class="prompt-card" aria-live="polite">
+      <div>
+        <div class="prompt-meta">
+          <span class="category-tag" id="categoryTag">Surprise me</span>
+        </div>
+
+        <div class="prompt-body">
+          <p class="prompt-text" id="promptText"></p>
+
+          <div class="extras">
+            <div class="extra" id="constraintWrap">
+              <strong>Optional constraint</strong><br />
+              <span id="constraintText"></span>
+            </div>
+
+            <div class="extra" id="twistWrap" hidden>
+              <strong>Make it stranger</strong><br />
+              <span id="twistText"></span>
+            </div>
+
+            <div class="extra" id="holidayWrap" hidden>
+              <strong>Holiday / seasonal lens</strong><br />
+              <span id="holidayText"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-actions">
+        <button class="primary-button" id="newPromptButton">↻ Another prompt</button>
+        <button class="secondary-button" id="favoriteButton">♡ Save</button>
+        <button class="secondary-button" id="copyButton">Copy</button>
+        <button class="secondary-button" id="shareButton">Share</button>
+      </div>
+    </section>
+
+    <div class="status" id="statusMessage" aria-live="polite"></div>
+  </main>
+
+  <div class="modal-backdrop" id="favoritesModal" role="dialog" aria-modal="true" aria-labelledby="favoritesTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="favoritesTitle">Saved prompts</h2>
+        <button class="ghost-button" id="closeFavoritesButton">Close</button>
+      </div>
+      <div id="favoritesList" class="favorites-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const promptBank = {
+      "Fiction": [
+        "Two people recognize each other in a place where neither one is supposed to be.",
+        "A motel keeps one room permanently locked, even though guests insist they have stayed in it.",
+        "Someone receives a letter addressed to a name they stopped using years ago.",
+        "A child discovers that every adult in town remembers the same event differently.",
+        "An elderly neighbor leaves behind a key with no explanation.",
+        "A person returns home after twenty years and finds one room exactly as they left it.",
+        "Someone starts finding objects in their apartment that belong to a stranger with the same birthday.",
+        "A friendship begins because two people are waiting for the same person who never arrives.",
+        "The town's oldest building is scheduled for demolition, and someone refuses to leave.",
+        "A person wakes up with an ordinary object in their pocket that changes what they remember about yesterday.",
+        "A family tradition continues even though nobody remembers why it began.",
+        "Someone hears their own voice on an old recording they know they never made.",
+        "A regular customer disappears from a café, leaving behind a notebook everyone is afraid to open.",
+        "A person moves into a house where the previous owner's labels are still attached to everything.",
+        "Two former friends are forced to share a ride during a storm.",
+        "Someone is mistaken for another person and decides not to correct the mistake.",
+        "A stranger knows exactly how the protagonist takes their coffee.",
+        "A small museum receives an anonymous donation that belongs to someone still alive.",
+        "A person returns a borrowed book decades late and discovers the lender has been waiting for it.",
+        "A local legend turns out to be less supernatural and more personal than anyone expected.",
+        "A person starts getting voicemail messages from a phone number that has been disconnected for years.",
+        "Someone finds a photograph showing them at an event they never attended.",
+        "A wedding guest recognizes the officiant from a life nobody at the wedding knows about.",
+        "A quiet employee discovers that their workplace has been keeping records on conversations that never happened.",
+        "A person learns that their childhood imaginary friend was not imaginary to everyone.",
+        "Two siblings inherit the same object, along with contradictory instructions.",
+        "Someone follows a handwritten map found inside a used coat pocket.",
+        "A person volunteers to help clean out a dead stranger's home and finds evidence they once knew each other.",
+        "A commuter gets off at the wrong stop and realizes they have been there before.",
+        "A character has one hour to decide whether to tell someone a truth that will permanently change their relationship."
+      ],
+
+      "Poetry": [
+        "Write about something your body remembers that your mind does not.",
+        "Write a poem in which an ordinary household object becomes a witness.",
+        "Write about hunger without mentioning food.",
+        "Write about a place you left that has continued living without you.",
+        "Write a poem that begins with an apology and ends with a refusal.",
+        "Write about a name you have carried, chosen, inherited, rejected, or imagined.",
+        "Write a poem in which weather behaves like a relative.",
+        "Write about a room after everyone has gone home.",
+        "Write a poem built around something found in a pocket.",
+        "Write about a photograph that no longer tells the truth.",
+        "Write a poem addressed to your younger self without giving advice.",
+        "Write about forgiveness as if it were a physical landscape.",
+        "Write a poem where the speaker keeps misremembering one important detail.",
+        "Write about a ritual nobody else knows is a ritual.",
+        "Write a poem in which the word 'home' changes meaning each time it appears.",
+        "Write about an object that survived when someone did not.",
+        "Write a poem that treats silence as a character.",
+        "Write about the moment immediately before someone says something irreversible.",
+        "Write a poem where the speaker's body and reflection disagree.",
+        "Write about belonging somewhere only temporarily.",
+        "Write a poem that moves through three different kinds of light.",
+        "Write about a voice you can still hear clearly.",
+        "Write a poem centered on a road, hallway, river, bridge, or other passage.",
+        "Write about wanting something you would never admit to wanting.",
+        "Write a poem in which a season arrives at the wrong time.",
+        "Write about a family story you suspect has been edited.",
+        "Write a poem made from things someone almost said.",
+        "Write about a small miracle nobody else noticed.",
+        "Write a poem in which the speaker mistakes grief for another emotion.",
+        "Write about surviving something quietly."
+      ],
+
+      "Creative Nonfiction": [
+        "Write about a place that changed after you learned something new about yourself.",
+        "Describe a family story you believed for years before realizing part of it was missing.",
+        "Write about an ordinary object that marks a major period of your life.",
+        "Tell the story of a time you stayed silent and what that silence did.",
+        "Write about a person you knew only briefly but still remember clearly.",
+        "Describe the first time a familiar place stopped feeling familiar.",
+        "Write about a decision that looked small from the outside but was enormous to you.",
+        "Tell a story through the places you lived rather than through chronological time.",
+        "Write about something you once hid and how hiding it shaped your behavior.",
+        "Describe a moment when another person saw you more clearly than you saw yourself.",
+        "Write about a tradition you kept, changed, or abandoned.",
+        "Tell the story of an apology you gave, received, wanted, or never got.",
+        "Write about a time you misunderstood someone you loved.",
+        "Describe a sound that instantly returns you to another period of your life.",
+        "Write about your relationship with one body part across different ages.",
+        "Tell a story about a stranger who became important for less than a day.",
+        "Write about a trip where the destination mattered less than what happened in between.",
+        "Describe a photograph without looking at it first, then look and write what you got wrong.",
+        "Write about a rule you were taught that you eventually stopped believing.",
+        "Tell a true story in which memory is unreliable and admit where you are unsure.",
+        "Write about a time you felt proud and embarrassed at the same time.",
+        "Describe an object you have kept longer than makes practical sense.",
+        "Write about a home you could not return to in exactly the same way.",
+        "Tell the story of learning a skill from someone whose life was very different from yours.",
+        "Write about a moment when you realized you had become an adult.",
+        "Describe a place where you felt watched, welcomed, or both.",
+        "Write about a lie that protected someone.",
+        "Tell the story of losing something that was not technically yours.",
+        "Write about an experience that made you revise the story you told about yourself.",
+        "Describe one ordinary day that now feels historically important in your own life."
+      ],
+
+      "Visual Art": [
+        "Create a piece using an object that has outlived its original purpose.",
+        "Make something about absence without showing an empty space.",
+        "Create a work built around the idea of a hidden name.",
+        "Make a piece that treats repair marks as the most important part.",
+        "Create something where the background tells a different story than the foreground.",
+        "Make a work inspired by an object found in a drawer, pocket, garage, or attic.",
+        "Create a portrait without showing a face.",
+        "Make something about home using no images of buildings.",
+        "Create a piece where repetition slowly becomes distortion.",
+        "Make a work about a memory using one deliberately inaccurate detail.",
+        "Create something that combines tenderness with an industrial material or texture.",
+        "Make a piece based on a place you have never visited but feel attached to.",
+        "Create a work that looks damaged but is actually carefully constructed.",
+        "Make something about inheritance without using family photographs.",
+        "Create a piece in which one element seems to be trying to escape the frame.",
+        "Make a work from visual fragments that do not immediately belong together.",
+        "Create something inspired by the last thing someone left behind.",
+        "Make a piece about transformation that avoids before-and-after imagery.",
+        "Create a work where a handwritten word or phrase becomes part of the image.",
+        "Make something that treats a mundane receipt, label, ticket, or form as sacred material.",
+        "Create a piece from only found, discarded, or repurposed materials.",
+        "Make a work about longing using distance rather than figures.",
+        "Create something where scale feels emotionally wrong.",
+        "Make a piece inspired by a secret you do not actually reveal.",
+        "Create a work in which softness interrupts something rigid.",
+        "Make something about being witnessed.",
+        "Create a piece with one intentionally unfinished area.",
+        "Make a work that changes meaning when rotated or viewed from another direction.",
+        "Create something where an erased or covered element remains visible.",
+        "Make a piece that looks like evidence from an event that never happened."
+      ],
+
+      "Photography": [
+        "Photograph something ordinary as if it were evidence.",
+        "Make a portrait where the person's face is not the main subject.",
+        "Photograph signs of someone who is not present.",
+        "Create a series about things that are almost symmetrical.",
+        "Photograph a place at a time of day when it feels unlike itself.",
+        "Create an image about waiting without photographing a person waiting.",
+        "Photograph the boundary between public and private space.",
+        "Make a series of objects people leave behind temporarily.",
+        "Photograph one color appearing in unrelated places.",
+        "Create an image about protection.",
+        "Photograph something designed to be permanent that is visibly deteriorating.",
+        "Make a series about handmade repairs.",
+        "Photograph evidence of a routine you do not understand.",
+        "Create an image where a reflection reveals more than the main subject.",
+        "Photograph a place that seems to contain two different eras at once.",
+        "Make a portrait using only hands, posture, clothing, or surroundings.",
+        "Photograph something that looks accidental but frame it deliberately.",
+        "Create a series around doors, gates, fences, curtains, or other thresholds.",
+        "Photograph something tiny as if it were monumental.",
+        "Make an image about memory using blur, obstruction, distance, or reflection.",
+        "Photograph an object in the place where it does not belong.",
+        "Create a series of spaces immediately after people have left them.",
+        "Photograph an ordinary object someone has customized or repaired.",
+        "Make an image about intimacy without photographing physical affection.",
+        "Photograph something that only exists because someone cared for it.",
+        "Create a series around handwritten language found in public.",
+        "Photograph a place that reveals who is allowed to be comfortable there.",
+        "Make an image where the most important thing is partly outside the frame.",
+        "Photograph evidence of weather rather than the weather itself.",
+        "Create a small photo series about things that refuse to disappear."
+      ],
+
+      "Mixed Media": [
+        "Combine a short piece of writing with an object that carries its own history.",
+        "Create a work using sound and one static image that contradict each other.",
+        "Make a piece that begins as a photograph and ends as something physically altered.",
+        "Combine found text with something handmade.",
+        "Create a work where the audience has to choose what to read, hear, or view first.",
+        "Make something from a voice memo, a map, and one invented detail.",
+        "Create a piece about memory using at least two forms that remember differently.",
+        "Combine a personal object with anonymous public language.",
+        "Make a work that includes one thing meant to be touched and one thing that cannot be touched.",
+        "Create a piece where a written sentence is gradually obscured by another medium.",
+        "Combine a family or archival image with material from the present day.",
+        "Make a work that can exist both digitally and physically, but changes between the two forms.",
+        "Create something that pairs a mundane document with an emotional response.",
+        "Combine a repeated sound with a slowly changing visual.",
+        "Make a work where the frame, container, or binding becomes part of the meaning.",
+        "Create something from a list, a photograph, and a piece of fabric or paper.",
+        "Combine a drawing or image with text that refuses to explain it.",
+        "Make a piece that uses scanning, photocopying, or repeated reproduction as transformation.",
+        "Create a work where a hidden layer can be revealed only by handling it.",
+        "Combine an old object with a new recording.",
+        "Make something that uses a QR code as part of the artwork rather than just as a link.",
+        "Create a piece that changes depending on whether it is viewed alone or with other people.",
+        "Combine a found image with your own handwriting.",
+        "Make a work using a digital error, glitch, compression artifact, or failed print intentionally.",
+        "Create something about identity using no portrait imagery.",
+        "Combine multiple people's voices without identifying who is speaking.",
+        "Make a piece that can be rearranged into more than one sequence.",
+        "Create a work from material you would normally throw away.",
+        "Combine documentation of a real event with an invented artifact.",
+        "Make something whose final form still shows evidence of how it was made."
+      ]
+    };
+
+    const constraints = [
+      "Do not use the most obvious word associated with the subject.",
+      "Use only two colors, images, motifs, or recurring elements.",
+      "Include one detail that appears insignificant at first.",
+      "Begin with the ending and work backward.",
+      "Do not explain why anything is happening.",
+      "Make one element repeat three times, changing slightly each time.",
+      "Leave one important thing unnamed.",
+      "Use a detail from a real memory.",
+      "Give the piece a title before you begin.",
+      "Remove the first idea that comes to mind and use the second.",
+      "Include a contradiction and do not resolve it.",
+      "Make the final image, line, or moment quieter than the rest.",
+      "Use something broken, incomplete, interrupted, or missing.",
+      "Avoid adjectives for the first draft.",
+      "Include a sensory detail from smell, sound, temperature, or texture.",
+      "Let the audience misunderstand something for as long as possible.",
+      "Work with a strict limit: 100 words, 10 lines, 10 minutes, or 10 images.",
+      "Include a borrowed phrase from something mundane: packaging, a sign, a form, or instructions.",
+      "Do not use dialogue.",
+      "Include exactly one question.",
+      "Change perspective halfway through.",
+      "Use one element that feels too beautiful for the subject.",
+      "Make the setting or background carry emotional information.",
+      "Include something handwritten.",
+      "Use an object as a stand-in for a person.",
+      "Create one deliberate gap or silence.",
+      "Make the piece circular: end where it began, but changed.",
+      "Use an ordinary detail to imply something larger.",
+      "Let one mistake remain in the finished work.",
+      "Include something that belongs to another time period.",
+      "Make something private feel public, or something public feel private.",
+      "Avoid naming the central emotion.",
+      "Use repetition instead of explanation.",
+      "Include a threshold: a doorway, border, bridge, transition, or moment of crossing.",
+      "Use one thing you found rather than made.",
+      "Let the work contain evidence of revision.",
+      "Include a detail that could be read in two completely different ways.",
+      "Use scale to create tension.",
+      "End before the expected resolution.",
+      "Make one part of the piece deliberately uncomfortable.",
+      "Include a small act of care.",
+      "Do not make the subject's identity the conflict."
+    ];
+
+    const twists = [
+      "Someone remembers it differently.",
+      "The thing being mourned is still technically there.",
+      "One character, object, or image has been using the wrong name.",
+      "The audience learns one important fact before the subject does.",
+      "A seemingly supernatural detail has an ordinary explanation—and the ordinary explanation is worse.",
+      "Something meant as protection becomes a barrier.",
+      "The person who left is the one telling the story.",
+      "An object appears twice, but it cannot logically be the same object.",
+      "The central relationship is not what the audience first assumes.",
+      "A private ritual becomes accidentally public.",
+      "The most reliable witness turns out to have misunderstood one detail.",
+      "A small kindness causes an unintended problem.",
+      "The missing thing was deliberately removed.",
+      "The work contains evidence of an earlier version of itself.",
+      "Someone is recognized by a gesture rather than a face.",
+      "The person who seems to be arriving is actually leaving.",
+      "The apparent ending is a beginning for someone else.",
+      "Something inherited was never meant for the person who received it.",
+      "A message reaches the correct person for the wrong reason.",
+      "An old version of the subject remains visible underneath the current one.",
+      "The person with the least authority knows the most.",
+      "The setting has changed, but the characters behave as if it has not.",
+      "A lie becomes more useful than the truth.",
+      "Someone is relieved by news they are expected to grieve.",
+      "The audience realizes a memory belongs to someone else.",
+      "A familiar object has been repaired so many times it is barely the original object.",
+      "The person who appears most certain is improvising.",
+      "The secret is not shameful—only difficult to explain.",
+      "A relationship survives because both people misunderstand the same thing.",
+      "The final detail changes the scale of everything that came before it."
+    ];
+
+
+    const holidays = [
+      "New Year's Day",
+      "Martin Luther King Jr. Day",
+      "Presidents' Day",
+      "Valentine's Day",
+      "St. Patrick's Day",
+      "Easter",
+      "Earth Day",
+      "Mother's Day",
+      "Memorial Day",
+      "Juneteenth",
+      "Father's Day",
+      "Independence Day",
+      "Labor Day",
+      "Indigenous Peoples' Day",
+      "Halloween",
+      "Veterans Day",
+      "Thanksgiving",
+      "Christmas Eve",
+      "Christmas Day",
+      "New Year's Eve",
+      "Samhain",
+      "Yule / Winter Solstice",
+      "Imbolc",
+      "Ostara / Spring Equinox",
+      "Beltane",
+      "Litha / Summer Solstice",
+      "Lughnasadh / Lammas",
+      "Mabon / Autumn Equinox"
+    ];
+
+    const holidayLenses = [
+      "Set the piece during {holiday}, but avoid the most obvious symbols associated with it.",
+      "Let {holiday} shape the setting, mood, or conflict without making the holiday itself the main subject.",
+      "Use {holiday} as the backdrop for something deeply ordinary.",
+      "Create a piece about what happens just before or just after {holiday}.",
+      "Use {holiday} to explore a tradition someone keeps, rejects, changes, or invents.",
+      "Make {holiday} present mostly through objects, weather, food, light, sound, or routine.",
+      "Set the work on {holiday}, but focus on the person least interested in celebrating it.",
+      "Use {holiday} as a point of contrast: what is expected to happen versus what actually happens.",
+      "Imagine {holiday} through the perspective of someone experiencing it differently for the first time.",
+      "Let one detail associated with {holiday} carry unexpected emotional weight.",
+      "Build the piece around a private ritual that happens during {holiday}.",
+      "Use {holiday} to explore belonging, memory, family, community, solitude, or change."
+    ];
+
+    const categoryLabels = ["Surprise Me", ...Object.keys(promptBank)];
+
+    let selectedCategory = localStorage.getItem("openPromptCategory") || "Surprise Me";
+    let currentPrompt = null;
+    let favorites = JSON.parse(localStorage.getItem("openPromptFavorites") || "[]");
+
+    const categoryRow = document.getElementById("categoryRow");
+    const promptText = document.getElementById("promptText");
+    const categoryTag = document.getElementById("categoryTag");
+    const constraintToggle = document.getElementById("constraintToggle");
+    const twistToggle = document.getElementById("twistToggle");
+    const holidayToggle = document.getElementById("holidayToggle");
+    const constraintWrap = document.getElementById("constraintWrap");
+    const twistWrap = document.getElementById("twistWrap");
+    const holidayWrap = document.getElementById("holidayWrap");
+    const constraintText = document.getElementById("constraintText");
+    const twistText = document.getElementById("twistText");
+    const holidayText = document.getElementById("holidayText");
+    const favoriteButton = document.getElementById("favoriteButton");
+    const favoriteCount = document.getElementById("favoriteCount");
+    const statusMessage = document.getElementById("statusMessage");
+    const favoritesModal = document.getElementById("favoritesModal");
+    const favoritesList = document.getElementById("favoritesList");
+
+    function randomItem(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function getCategoryForPrompt() {
+      if (selectedCategory === "Surprise Me") {
+        return randomItem(Object.keys(promptBank));
+      }
+      return selectedCategory;
+    }
+
+    function buildCategoryButtons() {
+      categoryRow.innerHTML = "";
+      categoryLabels.forEach(category => {
+        const button = document.createElement("button");
+        button.className = "category-button" + (category === selectedCategory ? " active" : "");
+        button.textContent = category;
+        button.addEventListener("click", () => {
+          selectedCategory = category;
+          localStorage.setItem("openPromptCategory", selectedCategory);
+          buildCategoryButtons();
+          generatePrompt();
+        });
+        categoryRow.appendChild(button);
+      });
+    }
+
+    function generatePrompt() {
+      const category = getCategoryForPrompt();
+      const prompt = randomItem(promptBank[category]);
+      const constraint = randomItem(constraints);
+      const twist = randomItem(twists);
+      const holiday = randomItem(holidays);
+      const holidayLens = randomItem(holidayLenses).replace("{holiday}", holiday);
+
+      currentPrompt = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        category,
+        prompt,
+        constraint,
+        twist,
+        holiday,
+        holidayLens,
+        showConstraint: constraintToggle.checked,
+        showTwist: twistToggle.checked,
+        showHoliday: holidayToggle.checked
+      };
+
+      renderPrompt();
+      setStatus("");
+    }
+
+    function renderPrompt() {
+      if (!currentPrompt) return;
+
+      promptText.textContent = currentPrompt.prompt;
+      categoryTag.textContent = currentPrompt.category;
+
+      constraintWrap.hidden = !constraintToggle.checked;
+      twistWrap.hidden = !twistToggle.checked;
+      holidayWrap.hidden = !holidayToggle.checked;
+
+      constraintText.textContent = currentPrompt.constraint;
+      twistText.textContent = currentPrompt.twist;
+      holidayText.textContent = currentPrompt.holidayLens;
+
+      updateFavoriteButton();
+    }
+
+    function promptToText(item = currentPrompt) {
+      if (!item) return "";
+
+      const parts = [
+        `${item.category.toUpperCase()}`,
+        "",
+        item.prompt
+      ];
+
+      if (constraintToggle.checked && item.constraint) {
+        parts.push("", `Optional constraint: ${item.constraint}`);
+      }
+
+      if (twistToggle.checked && item.twist) {
+        parts.push("", `Make it stranger: ${item.twist}`);
+      }
+
+      if (holidayToggle.checked && item.holidayLens) {
+        parts.push("", `Holiday / seasonal lens: ${item.holidayLens}`);
+      }
+
+      return parts.join("\n");
+    }
+
+    function isCurrentFavorite() {
+      if (!currentPrompt) return false;
+      return favorites.some(item =>
+        item.category === currentPrompt.category &&
+        item.prompt === currentPrompt.prompt &&
+        item.constraint === currentPrompt.constraint &&
+        item.twist === currentPrompt.twist &&
+        item.holidayLens === currentPrompt.holidayLens
+      );
+    }
+
+    function updateFavoriteButton() {
+      const saved = isCurrentFavorite();
+      favoriteButton.textContent = saved ? "♥ Saved" : "♡ Save";
+      favoriteCount.textContent = favorites.length;
+    }
+
+    function toggleFavorite() {
+      if (!currentPrompt) return;
+
+      const index = favorites.findIndex(item =>
+        item.category === currentPrompt.category &&
+        item.prompt === currentPrompt.prompt &&
+        item.constraint === currentPrompt.constraint &&
+        item.twist === currentPrompt.twist &&
+        item.holidayLens === currentPrompt.holidayLens
+      );
+
+      if (index >= 0) {
+        favorites.splice(index, 1);
+        setStatus("Removed from saved prompts.");
+      } else {
+        favorites.unshift({
+          ...currentPrompt,
+          savedAt: new Date().toISOString()
+        });
+        setStatus("Saved on this device.");
+      }
+
+      localStorage.setItem("openPromptFavorites", JSON.stringify(favorites));
+      updateFavoriteButton();
+    }
+
+    async function copyPrompt() {
+      const text = promptToText();
+
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("Copied to clipboard.");
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        setStatus("Copied to clipboard.");
+      }
+    }
+
+    async function sharePrompt() {
+      const text = promptToText();
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Take Root",
+            text
+          });
+          setStatus("Shared.");
+        } catch (error) {
+          if (error.name !== "AbortError") {
+            setStatus("Sharing didn't work on this device.");
+          }
+        }
+      } else {
+        await copyPrompt();
+        setStatus("Sharing isn't available here, so the prompt was copied instead.");
+      }
+    }
+
+    function setStatus(message) {
+      statusMessage.textContent = message;
+    }
+
+    function renderFavorites() {
+      favoritesList.innerHTML = "";
+
+      if (!favorites.length) {
+        favoritesList.innerHTML = `<div class="empty">Nothing saved yet. When a prompt catches, keep it here.</div>`;
+        return;
+      }
+
+      favorites.forEach((item, index) => {
+        const article = document.createElement("article");
+        article.className = "favorite-item";
+
+        const date = item.savedAt
+          ? new Date(item.savedAt).toLocaleDateString()
+          : "";
+
+        article.innerHTML = `
+          <small>${escapeHTML(item.category)}${date ? " · saved " + escapeHTML(date) : ""}</small>
+          <p>${escapeHTML(item.prompt)}</p>
+          <div class="favorite-actions">
+            <button class="tiny-button" data-copy="${index}">Copy</button>
+            <button class="tiny-button" data-delete="${index}">Remove</button>
+          </div>
+        `;
+
+        favoritesList.appendChild(article);
+      });
+
+      favoritesList.querySelectorAll("[data-copy]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const index = Number(button.dataset.copy);
+          const item = favorites[index];
+          const parts = [
+            item.category.toUpperCase(),
+            "",
+            item.prompt,
+            "",
+            `Optional constraint: ${item.constraint}`,
+            "",
+            `Make it stranger: ${item.twist}`,
+            "",
+            `Holiday / seasonal lens: ${item.holidayLens || ""}`
+          ];
+          await navigator.clipboard.writeText(parts.join("\n"));
+          setStatus("Saved prompt copied.");
+        });
+      });
+
+      favoritesList.querySelectorAll("[data-delete]").forEach(button => {
+        button.addEventListener("click", () => {
+          const index = Number(button.dataset.delete);
+          favorites.splice(index, 1);
+          localStorage.setItem("openPromptFavorites", JSON.stringify(favorites));
+          renderFavorites();
+          updateFavoriteButton();
+        });
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("newPromptButton").addEventListener("click", generatePrompt);
+    favoriteButton.addEventListener("click", toggleFavorite);
+    document.getElementById("copyButton").addEventListener("click", copyPrompt);
+    document.getElementById("shareButton").addEventListener("click", sharePrompt);
+
+    constraintToggle.addEventListener("change", () => {
+      constraintWrap.hidden = !constraintToggle.checked;
+    });
+
+    twistToggle.addEventListener("change", () => {
+      twistWrap.hidden = !twistToggle.checked;
+    });
+
+    holidayToggle.addEventListener("change", () => {
+      holidayWrap.hidden = !holidayToggle.checked;
+    });
+
+    document.getElementById("favoritesButton").addEventListener("click", () => {
+      renderFavorites();
+      favoritesModal.classList.add("open");
+    });
+
+    document.getElementById("closeFavoritesButton").addEventListener("click", () => {
+      favoritesModal.classList.remove("open");
+    });
+
+    favoritesModal.addEventListener("click", event => {
+      if (event.target === favoritesModal) {
+        favoritesModal.classList.remove("open");
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        favoritesModal.classList.remove("open");
+      }
+
+      if (event.code === "Space" && !["INPUT", "TEXTAREA", "BUTTON"].includes(document.activeElement.tagName)) {
+        event.preventDefault();
+        generatePrompt();
+      }
+    });
+
+    buildCategoryButtons();
+    updateFavoriteButton();
+    generatePrompt();
+  </script>
+</body>
+</html>
